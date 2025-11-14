@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Compact form styling - matching Asset Form */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+        }
+        
+        .form-section {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        
+        input, select, textarea {
+            font-size: 0.813rem;
+            padding: 0.375rem 0.5rem;
+        }
+        
+        .required {
+            color: #d93025;
+        }
+        
+        .multi-select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.5rem;
+            min-height: 36px;
+            background: white;
+            font-size: 0.813rem;
+        }
+        
+        .pm-chip {
+            display: inline-block;
+            background: #E9E9E9;
+            color: #000000;
+            padding: 0.25rem 0.5rem;
+            margin: 0.125rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pm-chip:hover {
+            opacity: 0.8;
+        }
+        
+        .pm-chip.selected {
+            background: #2A83F8;
+            color: #FFFFFF;
+        }
+        
+        .message {
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.813rem;
+        }
+        
+        .message-success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 3px solid #22c55e;
+        }
+        
+        .message-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 3px solid #ef4444;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 1.25rem;
+        }
+        
+        .spinner {
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #2563eb;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 0.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-white p-4">
+    <div id="message-container"></div>
+    <div id="loading-container" class="loading">
+        <div class="spinner"></div>
+        <p class="text-xs text-gray-600">Creating project...</p>
+    </div>
+    
+    <form id="projectForm">
+        <h1 class="text-sm font-semibold text-gray-800 mb-3">Start a Project</h1>
+        
+        <!-- Project Number -->
+        <div class="mb-3">
+            <label class="text-xs font-medium text-gray-700 block mb-1">Project Number <span class="required">*</span></label>
+            <input type="text" id="projectNumber" required class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs">
+        </div>
+        
+        <!-- Project Name -->
+        <div class="mb-3">
+            <label class="text-xs font-medium text-gray-700 block mb-1">Project Name <span class="required">*</span></label>
+            <input type="text" id="projectName" required class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs">
+        </div>
+        
+        <!-- Client -->
+        <div class="mb-3">
+            <label class="text-xs font-medium text-gray-700 block mb-1">Client <span class="required">*</span></label>
+            <input type="text" id="client" required class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs">
+        </div>
+        
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="text-xs font-medium text-gray-700 block mb-1">Description <span class="required">*</span></label>
+            <textarea id="description" required rows="3" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs"></textarea>
+        </div>
+        
+        <!-- Email Notifications -->
+        <div class="mb-3">
+            <label class="text-xs font-medium text-gray-700 block mb-1">Email Notifications <span class="required">*</span></label>
+            <textarea id="emailNotifications" required rows="2" placeholder="email1@company.com, email2@company.com" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs"></textarea>
+        </div>
+        
+        <!-- Project Managers -->
+        <div class="mb-3">
+            <label class="text-xs font-medium text-gray-700 block mb-1">Project Managers <span class="required">*</span></label>
+            <div class="multi-select" id="pmContainer">
+                <div id="pmChips"></div>
+            </div>
+            <input type="hidden" id="projectManagers" required>
+        </div>
+        
+        <!-- Timeline Details Section -->
+        <div class="form-section">
+            <h2 class="text-xs font-semibold text-gray-800 mb-2">Timeline Details</h2>
+            
+            <div class="flex gap-2 mb-3">
+                <div class="flex-1">
+                    <label class="text-xs font-medium text-gray-700 block mb-1">Start Date</label>
+                    <input type="date" id="startDate" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs">
+                </div>
+                
+                <div class="flex-1">
+                    <label class="text-xs font-medium text-gray-700 block mb-1">In-Hands Date</label>
+                    <input type="date" id="inHandsDate" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Buttons -->
+        <div class="flex justify-center mt-4">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded text-sm font-medium hover:bg-blue-700" id="addBtn">
+                Add Project
+            </button>
+        </div>
+    </form>
+    
+    <script>
+        let selectedPMs = [];
+        let availablePMs = [];
+        
+        // Load project managers on init
+        google.script.run
+            .withSuccessHandler(function(pms) {
+                availablePMs = pms;
+                renderPMChips();
+            })
+            .getProjectManagers();
+        
+        function renderPMChips() {
+            const container = document.getElementById('pmChips');
+            container.innerHTML = '';
+            
+            availablePMs.forEach(pm => {
+                const chip = document.createElement('span');
+                chip.className = 'pm-chip';
+                chip.textContent = pm;
+                if (selectedPMs.includes(pm)) {
+                    chip.classList.add('selected');
+                }
+                chip.onclick = () => togglePM(pm);
+                container.appendChild(chip);
+            });
+            
+            document.getElementById('projectManagers').value = selectedPMs.join(', ');
+        }
+        
+        function togglePM(pm) {
+            const index = selectedPMs.indexOf(pm);
+            if (index > -1) {
+                selectedPMs.splice(index, 1);
+            } else {
+                selectedPMs.push(pm);
+            }
+            renderPMChips();
+        }
+        
+        const form = document.getElementById('projectForm');
+        const addBtn = document.getElementById('addBtn');
+        const messageContainer = document.getElementById('message-container');
+        const loadingContainer = document.getElementById('loading-container');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (selectedPMs.length === 0) {
+                showMessage('error', 'Please select at least one Project Manager');
+                return;
+            }
+            
+            const setupData = {
+                projectNumber: document.getElementById('projectNumber').value.trim(),
+                projectName: document.getElementById('projectName').value.trim(),
+                client: document.getElementById('client').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                emailNotifications: document.getElementById('emailNotifications').value.trim(),
+                projectManagers: selectedPMs,
+                startDate: document.getElementById('startDate').value,
+                inHandsDate: document.getElementById('inHandsDate').value
+            };
+            
+            addBtn.disabled = true;
+            addBtn.textContent = 'Creating...';
+            loadingContainer.style.display = 'block';
+            form.style.display = 'none';
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    loadingContainer.style.display = 'none';
+                    
+                    if (result.success) {
+                        showMessage('success', '✓ Project created successfully!');
+                        setTimeout(() => {
+                            clearForm();
+                            form.style.display = 'block';
+                            addBtn.disabled = false;
+                            addBtn.textContent = 'Add Project';
+                        }, 2000);
+                    } else {
+                        form.style.display = 'block';
+                        showMessage('error', result.message);
+                        addBtn.disabled = false;
+                        addBtn.textContent = 'Add Project';
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    loadingContainer.style.display = 'none';
+                    form.style.display = 'block';
+                    showMessage('error', error.message);
+                    addBtn.disabled = false;
+                    addBtn.textContent = 'Add Project';
+                })
+                .createNewProject(setupData);
+        });
+        
+        function clearForm() {
+            form.reset();
+            selectedPMs = [];
+            renderPMChips();
+            messageContainer.innerHTML = '';
+        }
+        
+        function showMessage(type, message) {
+            const className = type === 'success' ? 'message-success' : 'message-error';
+            messageContainer.innerHTML = `<div class="message ${className}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>
